@@ -1,2 +1,2 @@
-# KZ_Storage
-一个基于GO的分布式云存储系统
+# IM_System
+一个基于GO的IM即时消息系统
