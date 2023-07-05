@@ -2,11 +2,11 @@
 package router
 
 import (
+	"IM_System/docs"
 	"IM_System/service"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/swag/example/basic/docs"
 )
 
 func Router() *gin.Engine {

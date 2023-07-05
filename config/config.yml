@@ -1,6 +1,6 @@
 mysql:
   username: "root"
-  password: "xxxxxx"
+  password: "0xxxxxx"
   host: "127.0.0.1"
   port: "3306"
   db_name: "ginchat"
