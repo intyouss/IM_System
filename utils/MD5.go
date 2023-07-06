@@ -16,7 +16,3 @@ func MD5Encode(data string) string {
 func MakePassword(plainpwd, salt string) string {
 	return MD5Encode(plainpwd + salt)
 }
-
-func ValidPassword(plainpwd, salt string, password string) bool {
-	return MD5Encode(plainpwd+salt) == password
-}

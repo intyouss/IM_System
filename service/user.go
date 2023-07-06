@@ -23,6 +23,32 @@ func GetUserList(c *gin.Context) {
 	})
 }
 
+// UserLogin
+// @Summary 用户登录
+// @Tags 用户模块
+// @param name formData string true "用户名"
+// @param password formData string true "密码"
+// @Success 200 {string} json "{"code","data", "msg"}"
+// @Router /user/userLogin [post]
+func UserLogin(c *gin.Context) {
+	name := c.PostForm("name")
+	password := c.PostForm("password")
+	user, err := db.UserLogin(name, password)
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code": 1,
+			"data": nil,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"code": 0,
+		"data": user,
+		"msg":  "success",
+	})
+}
+
 // GetUserOnly
 // @Summary 获取单一用户
 // @Tags 用户模块
@@ -92,6 +118,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 	user.Password = utils.MakePassword(password, salt)
+	user.Salt = salt
 	err := db.CreateUser(&user)
 	if err != nil {
 		c.JSON(200, gin.H{

@@ -9,13 +9,13 @@ import (
 
 type UserBasic struct {
 	Name          string
-	Password      string
+	Password      string `json:"-"`
 	Phone         string `valid:"matches(^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\\d{8}$)"`
 	Email         string `valid:"email"`
 	ClientIp      string
 	ClientPort    string
 	Identity      string
-	Salt          string
+	Salt          string `json:"-"`
 	LoginTime     time.Time
 	HeartbeatTime time.Time
 	LogoutTime    time.Time
@@ -26,6 +26,17 @@ type UserBasic struct {
 
 func (table *UserBasic) TableName() string {
 	return "user_basic"
+}
+
+func UserLogin(name string, password string) (user *UserBasic, err error) {
+	user, err = FindUserByName(name)
+	if err != nil {
+		return nil, errors.New("username is not exist")
+	}
+	if passwd := utils.MakePassword(password, user.Salt); passwd != user.Password {
+		return nil, errors.New("wrong username or password")
+	}
+	return user, nil
 }
 
 func FindUserByName(name string) (user *UserBasic, err error) {
