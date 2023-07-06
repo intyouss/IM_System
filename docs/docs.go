@@ -95,6 +95,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/getUser": {
+            "get": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "获取单一用户",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\",\"data\", \"msg\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/user/getUserList": {
             "get": {
                 "tags": [

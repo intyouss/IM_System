@@ -19,6 +19,40 @@ func GetUserList(c *gin.Context) {
 	})
 }
 
+// GetUser
+// @Summary 获取单一用户
+// @Tags 用户模块
+// @param id query string true "id"
+// @Success 200 {string} json "{"code","data", "msg"}"
+// @Router /user/getUser [get]
+func GetUser(c *gin.Context) {
+	user := db.UserBasic{}
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		c.JSON(500, gin.H{
+			"code": -1,
+			"data": nil,
+			"msg":  "服务端出现错误",
+		})
+		return
+	}
+	user.ID = uint(id)
+	data, err := db.GetUser(&user)
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code": 0,
+			"data": nil,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"code": 0,
+		"data": data,
+		"msg":  "success",
+	})
+}
+
 // CreateUser
 // @Summary 新增用户
 // @Tags 用户模块
@@ -38,9 +72,18 @@ func CreateUser(c *gin.Context) {
 			"data": nil,
 			"msg":  "两次输入密码不一致",
 		})
+		return
 	}
 	user.Password = password
-	db.CreateUser(&user)
+	err := db.CreateUser(&user)
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code": 0,
+			"data": nil,
+			"msg":  err.Error(),
+		})
+		return
+	}
 	c.JSON(200, gin.H{
 		"code": 0,
 		"data": nil,
@@ -63,9 +106,18 @@ func DeleteUser(c *gin.Context) {
 			"data": nil,
 			"msg":  "服务端出现错误",
 		})
+		return
 	}
 	user.ID = uint(id)
-	db.DeleteUser(&user)
+	err = db.DeleteUser(&user)
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code": 0,
+			"data": nil,
+			"msg":  err.Error(),
+		})
+		return
+	}
 	c.JSON(200, gin.H{
 		"code": 0,
 		"data": nil,
@@ -92,13 +144,22 @@ func UpdateUser(c *gin.Context) {
 			"data": nil,
 			"msg":  "服务端出现错误",
 		})
+		return
 	}
 	user.ID = uint(id)
 	user.Password = c.PostForm("password")
 	user.Phone = c.PostForm("phone")
 	user.Name = c.PostForm("name")
 	user.Email = c.PostForm("email")
-	db.UpdateUser(&user)
+	err = db.UpdateUser(&user)
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code": 0,
+			"data": nil,
+			"msg":  err.Error(),
+		})
+		return
+	}
 	c.JSON(200, gin.H{
 		"code": 0,
 		"data": nil,
