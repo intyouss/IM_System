@@ -1,3 +1,13 @@
+definitions:
+  models.Message:
+    properties:
+      code:
+        default: 0
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -10,4 +20,13 @@ paths:
             type: string
       tags:
       - 首页
+  /user/getUserList:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Message'
+      tags:
+      - 获取用户列表
 swagger: "2.0"

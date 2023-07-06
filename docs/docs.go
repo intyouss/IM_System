@@ -30,6 +30,36 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user/getUserList": {
+            "get": {
+                "tags": [
+                    "获取用户列表"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Message"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Message": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "data": {},
+                "msg": {
+                    "type": "string"
+                }
+            }
         }
     }
 }`
