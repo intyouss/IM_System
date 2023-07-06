@@ -58,6 +58,18 @@ const docTemplate = `{
                         "name": "repassword",
                         "in": "formData",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "手机号码",
+                        "name": "phone",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "邮箱",
+                        "name": "email",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -95,21 +107,12 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/getUser": {
+        "/user/getUserList": {
             "get": {
                 "tags": [
                     "用户模块"
                 ],
-                "summary": "获取单一用户",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
+                "summary": "获取用户列表",
                 "responses": {
                     "200": {
                         "description": "{\"code\",\"data\", \"msg\"}",
@@ -120,12 +123,38 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/getUserList": {
+        "/user/getUserOnly": {
             "get": {
                 "tags": [
                     "用户模块"
                 ],
-                "summary": "获取用户列表",
+                "summary": "获取单一用户",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "手机号码",
+                        "name": "phone",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "邮箱",
+                        "name": "email",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "{\"code\",\"data\", \"msg\"}",

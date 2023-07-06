@@ -27,30 +27,72 @@ func (table *UserBasic) TableName() string {
 	return "user_basic"
 }
 
+func FindUserByName(name string) (user *UserBasic, err error) {
+	db := utils.DB.Where("name = ?", name).First(&user)
+	return user, db.Error
+}
+
+func FindUserByPhone(phone string) (user *UserBasic, err error) {
+	db := utils.DB.Where("phone = ?", phone).First(&user)
+	return user, db.Error
+}
+
+func FindUserByEmail(email string) (user *UserBasic, err error) {
+	db := utils.DB.Where("email = ?", email).First(&user)
+	return user, db.Error
+}
+
+func FindUserByID(id uint) (user *UserBasic, err error) {
+	db := utils.DB.Where("id = ?", id).First(&user)
+	return user, db.Error
+}
+func GetUserOnly(user *UserBasic) (*UserBasic, error) {
+	if user.Name != "" {
+		return FindUserByName(user.Name)
+	}
+	if user.ID != 0 {
+		return FindUserByID(user.ID)
+	}
+	if user.Phone != "" {
+		return FindUserByPhone(user.Phone)
+	}
+	if user.Email != "" {
+		return FindUserByEmail(user.Email)
+	}
+	return nil, errors.New("parameter error")
+}
+
 func GetUserList() []*UserBasic {
 	data := make([]*UserBasic, 10)
 	utils.DB.Find(&data)
 	return data
 }
 
-func GetUser(user *UserBasic) (*UserBasic, error) {
-	if err := utils.DB.First(&user).Error; err != nil {
-		return nil, err
-	}
-	return user, nil
-}
-
 func CreateUser(user *UserBasic) (err error) {
-	_, err = GetUser(&UserBasic{Name: user.Name})
-	if err == nil {
-		return errors.New("object is exist")
+	if user.Name != "" {
+		_, err = FindUserByName(user.Name)
+		if err == nil {
+			return errors.New("name is exist")
+		}
+	}
+	if user.Email != "" {
+		_, err = FindUserByEmail(user.Email)
+		if err == nil {
+			return errors.New("email is exist")
+		}
+	}
+	if user.Phone != "" {
+		_, err = FindUserByPhone(user.Phone)
+		if err == nil {
+			return errors.New("phone is exist")
+		}
 	}
 	utils.DB.Create(&user)
 	return nil
 }
 
 func DeleteUser(user *UserBasic) (err error) {
-	_, err = GetUser(user)
+	_, err = FindUserByID(user.ID)
 	if err != nil {
 		return err
 	}
@@ -59,9 +101,7 @@ func DeleteUser(user *UserBasic) (err error) {
 }
 
 func UpdateUser(user *UserBasic) (err error) {
-	data := UserBasic{}
-	data.ID = user.ID
-	_, err = GetUser(&data)
+	_, err = FindUserByID(user.ID)
 	if err != nil {
 		return err
 	}

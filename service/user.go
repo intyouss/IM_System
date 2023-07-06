@@ -2,6 +2,7 @@ package service
 
 import (
 	"IM_System/models/db"
+	"fmt"
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -20,25 +21,33 @@ func GetUserList(c *gin.Context) {
 	})
 }
 
-// GetUser
+// GetUserOnly
 // @Summary 获取单一用户
 // @Tags 用户模块
-// @param id query string true "id"
+// @param id query string false "id"
+// @param name query string false "用户名"
+// @param phone query string false "手机号码"
+// @param email query string false "邮箱"
 // @Success 200 {string} json "{"code","data", "msg"}"
-// @Router /user/getUser [get]
-func GetUser(c *gin.Context) {
+// @Router /user/getUserOnly [get]
+func GetUserOnly(c *gin.Context) {
 	user := db.UserBasic{}
-	id, err := strconv.Atoi(c.Query("id"))
-	if err != nil {
-		c.JSON(500, gin.H{
-			"code": -1,
-			"data": nil,
-			"msg":  "Server error",
-		})
-		return
+	if c.Query("id") != "" {
+		id, err := strconv.Atoi(c.Query("id"))
+		if err != nil {
+			c.JSON(500, gin.H{
+				"code": -1,
+				"data": nil,
+				"msg":  "Server error",
+			})
+			return
+		}
+		user.ID = uint(id)
 	}
-	user.ID = uint(id)
-	data, err := db.GetUser(&user)
+	user.Phone = c.Query("phone")
+	user.Name = c.Query("name")
+	user.Email = c.Query("email")
+	data, err := db.GetUserOnly(&user)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 1,
@@ -60,6 +69,8 @@ func GetUser(c *gin.Context) {
 // @param name formData string true "用户名"
 // @param password formData string true "密码"
 // @param repassword formData string true "确认密码"
+// @param phone formData string false "手机号码"
+// @param email formData string false "邮箱"
 // @Success 200 {string} json "{"code","data", "msg"}"
 // @Router /user/createUser [post]
 func CreateUser(c *gin.Context) {
@@ -67,6 +78,8 @@ func CreateUser(c *gin.Context) {
 	user.Name = c.PostForm("name")
 	password := c.PostForm("password")
 	repassword := c.PostForm("repassword")
+	user.Phone = c.PostForm("phone")
+	user.Email = c.PostForm("email")
 	if password != repassword {
 		c.JSON(200, gin.H{
 			"code": 1,
@@ -153,6 +166,7 @@ func UpdateUser(c *gin.Context) {
 	user.Name = c.PostForm("name")
 	user.Email = c.PostForm("email")
 	_, err = govalidator.ValidateStruct(user)
+	fmt.Println(err)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 1,
