@@ -32,7 +32,7 @@ func GetUser(c *gin.Context) {
 		c.JSON(500, gin.H{
 			"code": -1,
 			"data": nil,
-			"msg":  "服务端出现错误",
+			"msg":  "Server error",
 		})
 		return
 	}
@@ -40,7 +40,7 @@ func GetUser(c *gin.Context) {
 	data, err := db.GetUser(&user)
 	if err != nil {
 		c.JSON(200, gin.H{
-			"code": 0,
+			"code": 1,
 			"data": nil,
 			"msg":  err.Error(),
 		})
@@ -67,10 +67,10 @@ func CreateUser(c *gin.Context) {
 	password := c.PostForm("password")
 	repassword := c.PostForm("repassword")
 	if password != repassword {
-		c.JSON(403, gin.H{
-			"code": -1,
+		c.JSON(200, gin.H{
+			"code": 1,
 			"data": nil,
-			"msg":  "两次输入密码不一致",
+			"msg":  "Entered passwords differ",
 		})
 		return
 	}
@@ -78,7 +78,7 @@ func CreateUser(c *gin.Context) {
 	err := db.CreateUser(&user)
 	if err != nil {
 		c.JSON(200, gin.H{
-			"code": 0,
+			"code": 1,
 			"data": nil,
 			"msg":  err.Error(),
 		})
@@ -104,7 +104,7 @@ func DeleteUser(c *gin.Context) {
 		c.JSON(500, gin.H{
 			"code": -1,
 			"data": nil,
-			"msg":  "服务端出现错误",
+			"msg":  "Server error",
 		})
 		return
 	}
@@ -112,7 +112,7 @@ func DeleteUser(c *gin.Context) {
 	err = db.DeleteUser(&user)
 	if err != nil {
 		c.JSON(200, gin.H{
-			"code": 0,
+			"code": 1,
 			"data": nil,
 			"msg":  err.Error(),
 		})
@@ -142,7 +142,7 @@ func UpdateUser(c *gin.Context) {
 		c.JSON(500, gin.H{
 			"code": -1,
 			"data": nil,
-			"msg":  "服务端出现错误",
+			"msg":  "Server error",
 		})
 		return
 	}
@@ -154,7 +154,7 @@ func UpdateUser(c *gin.Context) {
 	err = db.UpdateUser(&user)
 	if err != nil {
 		c.JSON(200, gin.H{
-			"code": 0,
+			"code": 1,
 			"data": nil,
 			"msg":  err.Error(),
 		})
