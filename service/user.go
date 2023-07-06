@@ -2,9 +2,11 @@ package service
 
 import (
 	"IM_System/models/db"
+	"IM_System/utils"
 	"fmt"
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
+	"math/rand"
 	"strconv"
 )
 
@@ -80,6 +82,7 @@ func CreateUser(c *gin.Context) {
 	repassword := c.PostForm("repassword")
 	user.Phone = c.PostForm("phone")
 	user.Email = c.PostForm("email")
+	salt := fmt.Sprintf("%06d", rand.Int31())
 	if password != repassword {
 		c.JSON(200, gin.H{
 			"code": 1,
@@ -88,7 +91,7 @@ func CreateUser(c *gin.Context) {
 		})
 		return
 	}
-	user.Password = password
+	user.Password = utils.MakePassword(password, salt)
 	err := db.CreateUser(&user)
 	if err != nil {
 		c.JSON(200, gin.H{

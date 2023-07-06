@@ -15,6 +15,7 @@ type UserBasic struct {
 	ClientIp      string
 	ClientPort    string
 	Identity      string
+	Salt          string
 	LoginTime     time.Time
 	HeartbeatTime time.Time
 	LogoutTime    time.Time
