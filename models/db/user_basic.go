@@ -2,7 +2,6 @@ package db
 
 import (
 	"IM_System/utils"
-	"fmt"
 	"gorm.io/gorm"
 	"time"
 )
@@ -30,8 +29,20 @@ func (table *UserBasic) TableName() string {
 func GetUserList() []*UserBasic {
 	data := make([]*UserBasic, 10)
 	utils.DB.Find(&data)
-	for _, v := range data {
-		fmt.Println(v)
-	}
+	//for _, v := range data {
+	//	fmt.Println(v)
+	//}
 	return data
+}
+
+func CreateUser(user *UserBasic) *gorm.DB {
+	return utils.DB.Create(&user)
+}
+
+func DeleteUser(user *UserBasic) *gorm.DB {
+	return utils.DB.Delete(&user)
+}
+
+func UpdateUser(user *UserBasic) *gorm.DB {
+	return utils.DB.Updates(&user)
 }

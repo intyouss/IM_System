@@ -1,20 +1,107 @@
 package service
 
 import (
-	"IM_System/models"
 	"IM_System/models/db"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 // GetUserList
-// @Tags 获取用户列表
-// @Success 200 {object} models.Message
+// @Summary 获取用户列表
+// @Tags 用户模块
+// @Success 200 {string} json "{"code","data", "msg"}"
 // @Router /user/getUserList [get]
 func GetUserList(c *gin.Context) {
-	data := models.Message{
-		Data: db.GetUserList(),
-		Msg:  "success",
-	}
+	c.JSON(200, gin.H{
+		"code": 0,
+		"data": db.GetUserList(),
+		"msg":  "success",
+	})
+}
 
-	c.JSON(200, data)
+// CreateUser
+// @Summary 新增用户
+// @Tags 用户模块
+// @param name formData string true "用户名"
+// @param password formData string true "密码"
+// @param repassword formData string true "确认密码"
+// @Success 200 {string} json "{"code","data", "msg"}"
+// @Router /user/createUser [post]
+func CreateUser(c *gin.Context) {
+	user := db.UserBasic{}
+	user.Name = c.PostForm("name")
+	password := c.PostForm("password")
+	repassword := c.PostForm("repassword")
+	if password != repassword {
+		c.JSON(403, gin.H{
+			"code": -1,
+			"data": nil,
+			"msg":  "两次输入密码不一致",
+		})
+	}
+	user.Password = password
+	db.CreateUser(&user)
+	c.JSON(200, gin.H{
+		"code": 0,
+		"data": nil,
+		"msg":  "success",
+	})
+}
+
+// DeleteUser
+// @Summary 删除用户
+// @Tags 用户模块
+// @param id formData string true "id"
+// @Success 200 {string} json "{"code","data", "msg"}"
+// @Router /user/deleteUser [post]
+func DeleteUser(c *gin.Context) {
+	user := db.UserBasic{}
+	id, err := strconv.Atoi(c.PostForm("id"))
+	if err != nil {
+		c.JSON(500, gin.H{
+			"code": -1,
+			"data": nil,
+			"msg":  "服务端出现错误",
+		})
+	}
+	user.ID = uint(id)
+	db.DeleteUser(&user)
+	c.JSON(200, gin.H{
+		"code": 0,
+		"data": nil,
+		"msg":  "success",
+	})
+}
+
+// UpdateUser
+// @Summary 更新用户
+// @Tags 用户模块
+// @param id formData string true "id"
+// @param name formData string false "name"
+// @param password formData string false "password"
+// @param Phone formData string false "Phone"
+// @param Email formData string false "Email"
+// @Success 200 {string} json "{"code","data", "msg"}"
+// @Router /user/updateUser [post]
+func UpdateUser(c *gin.Context) {
+	user := db.UserBasic{}
+	id, err := strconv.Atoi(c.PostForm("id"))
+	if err != nil {
+		c.JSON(500, gin.H{
+			"code": -1,
+			"data": nil,
+			"msg":  "服务端出现错误",
+		})
+	}
+	user.ID = uint(id)
+	user.Password = c.PostForm("password")
+	user.Phone = c.PostForm("phone")
+	user.Name = c.PostForm("name")
+	user.Email = c.PostForm("email")
+	db.UpdateUser(&user)
+	c.JSON(200, gin.H{
+		"code": 0,
+		"data": nil,
+		"msg":  "success",
+	})
 }

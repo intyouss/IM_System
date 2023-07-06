@@ -1,13 +1,3 @@
-definitions:
-  models.Message:
-    properties:
-      code:
-        default: 0
-        type: integer
-      data: {}
-      msg:
-        type: string
-    type: object
 info:
   contact: {}
 paths:
@@ -20,13 +10,88 @@ paths:
             type: string
       tags:
       - 首页
+  /user/createUser:
+    post:
+      parameters:
+      - description: 用户名
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: 密码
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: 确认密码
+        in: formData
+        name: repassword
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"code","data", "msg"}'
+          schema:
+            type: string
+      summary: 新增用户
+      tags:
+      - 用户模块
+  /user/deleteUser:
+    post:
+      parameters:
+      - description: id
+        in: formData
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"code","data", "msg"}'
+          schema:
+            type: string
+      summary: 删除用户
+      tags:
+      - 用户模块
   /user/getUserList:
     get:
       responses:
         "200":
-          description: OK
+          description: '{"code","data", "msg"}'
           schema:
-            $ref: '#/definitions/models.Message'
+            type: string
+      summary: 获取用户列表
       tags:
-      - 获取用户列表
+      - 用户模块
+  /user/updateUser:
+    post:
+      parameters:
+      - description: id
+        in: formData
+        name: id
+        required: true
+        type: string
+      - description: name
+        in: formData
+        name: name
+        type: string
+      - description: password
+        in: formData
+        name: password
+        type: string
+      - description: Phone
+        in: formData
+        name: Phone
+        type: string
+      - description: Email
+        in: formData
+        name: Email
+        type: string
+      responses:
+        "200":
+          description: '{"code","data", "msg"}'
+          schema:
+            type: string
+      summary: 更新用户
+      tags:
+      - 用户模块
 swagger: "2.0"
