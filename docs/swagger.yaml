@@ -86,21 +86,21 @@ paths:
         name: id
         required: true
         type: string
-      - description: name
+      - description: 用户名
         in: formData
         name: name
         type: string
-      - description: password
+      - description: 密码
         in: formData
         name: password
         type: string
-      - description: Phone
+      - description: 手机号码
         in: formData
-        name: Phone
+        name: phone
         type: string
-      - description: Email
+      - description: 邮箱
         in: formData
-        name: Email
+        name: email
         type: string
       responses:
         "200":

@@ -2,6 +2,7 @@ package service
 
 import (
 	"IM_System/models/db"
+	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -129,10 +130,10 @@ func DeleteUser(c *gin.Context) {
 // @Summary 更新用户
 // @Tags 用户模块
 // @param id formData string true "id"
-// @param name formData string false "name"
-// @param password formData string false "password"
-// @param Phone formData string false "Phone"
-// @param Email formData string false "Email"
+// @param name formData string false "用户名"
+// @param password formData string false "密码"
+// @param phone formData string false "手机号码"
+// @param email formData string false "邮箱"
 // @Success 200 {string} json "{"code","data", "msg"}"
 // @Router /user/updateUser [post]
 func UpdateUser(c *gin.Context) {
@@ -151,6 +152,15 @@ func UpdateUser(c *gin.Context) {
 	user.Phone = c.PostForm("phone")
 	user.Name = c.PostForm("name")
 	user.Email = c.PostForm("email")
+	_, err = govalidator.ValidateStruct(user)
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code": 1,
+			"data": nil,
+			"msg":  "Parameter validation failed",
+		})
+		return
+	}
 	err = db.UpdateUser(&user)
 	if err != nil {
 		c.JSON(200, gin.H{

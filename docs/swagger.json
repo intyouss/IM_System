@@ -140,26 +140,26 @@
                     },
                     {
                         "type": "string",
-                        "description": "name",
+                        "description": "用户名",
                         "name": "name",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "password",
+                        "description": "密码",
                         "name": "password",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "Phone",
-                        "name": "Phone",
+                        "description": "手机号码",
+                        "name": "phone",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "Email",
-                        "name": "Email",
+                        "description": "邮箱",
+                        "name": "email",
                         "in": "formData"
                     }
                 ],

@@ -8,11 +8,10 @@ import (
 )
 
 type UserBasic struct {
-	ID            uint
 	Name          string
 	Password      string
-	Phone         string
-	Email         string
+	Phone         string `valid:"matches(^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\\d{8}$)"`
+	Email         string `valid:"email"`
 	ClientIp      string
 	ClientPort    string
 	Identity      string
@@ -51,7 +50,7 @@ func CreateUser(user *UserBasic) (err error) {
 }
 
 func DeleteUser(user *UserBasic) (err error) {
-	_, err = GetUser(&UserBasic{ID: user.ID})
+	_, err = GetUser(user)
 	if err != nil {
 		return err
 	}
@@ -60,10 +59,13 @@ func DeleteUser(user *UserBasic) (err error) {
 }
 
 func UpdateUser(user *UserBasic) (err error) {
-	_, err = GetUser(&UserBasic{ID: user.ID})
+	data := UserBasic{}
+	data.ID = user.ID
+	_, err = GetUser(&data)
 	if err != nil {
 		return err
 	}
-	utils.DB.Updates(&user)
+	utils.DB.Model(&user).Updates(&UserBasic{
+		Name: user.Name, Phone: user.Phone, Email: user.Email, Password: user.Password})
 	return nil
 }
