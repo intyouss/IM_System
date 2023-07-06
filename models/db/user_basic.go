@@ -28,17 +28,6 @@ func (table *UserBasic) TableName() string {
 	return "user_basic"
 }
 
-func UserLogin(name string, password string) (user *UserBasic, err error) {
-	user, err = FindUserByName(name)
-	if err != nil {
-		return nil, errors.New("username is not exist")
-	}
-	if passwd := utils.MakePassword(password, user.Salt); passwd != user.Password {
-		return nil, errors.New("wrong username or password")
-	}
-	return user, nil
-}
-
 func FindUserByName(name string) (user *UserBasic, err error) {
 	db := utils.DB.Where("name = ?", name).First(&user)
 	return user, db.Error
@@ -58,12 +47,21 @@ func FindUserByID(id uint) (user *UserBasic, err error) {
 	db := utils.DB.Where("id = ?", id).First(&user)
 	return user, db.Error
 }
+
+func UserLogin(name string, password string) (user *UserBasic, err error) {
+	user, err = FindUserByName(name)
+	if err != nil {
+		return nil, errors.New("username is not exist")
+	}
+	if passwd := utils.MakePassword(password, user.Salt); passwd != user.Password {
+		return nil, errors.New("wrong username or password")
+	}
+	return user, nil
+}
+
 func GetUserOnly(user *UserBasic) (*UserBasic, error) {
 	if user.Name != "" {
 		return FindUserByName(user.Name)
-	}
-	if user.ID != 0 {
-		return FindUserByID(user.ID)
 	}
 	if user.Phone != "" {
 		return FindUserByPhone(user.Phone)

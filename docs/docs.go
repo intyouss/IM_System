@@ -82,8 +82,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/deleteUser": {
-            "post": {
+        "/user/deleteUser/{id}": {
+            "delete": {
                 "tags": [
                     "用户模块"
                 ],
@@ -93,7 +93,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "id",
                         "name": "id",
-                        "in": "formData",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -132,12 +132,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
                         "description": "用户名",
                         "name": "name",
                         "in": "query"
@@ -165,8 +159,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/updateUser": {
-            "post": {
+        "/user/updateUser/{id}": {
+            "put": {
                 "tags": [
                     "用户模块"
                 ],
@@ -176,7 +170,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "id",
                         "name": "id",
-                        "in": "formData",
+                        "in": "path",
                         "required": true
                     },
                     {

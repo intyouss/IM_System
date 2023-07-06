@@ -44,11 +44,11 @@ paths:
       summary: 新增用户
       tags:
       - 用户模块
-  /user/deleteUser:
-    post:
+  /user/deleteUser/{id}:
+    delete:
       parameters:
       - description: id
-        in: formData
+        in: path
         name: id
         required: true
         type: string
@@ -73,10 +73,6 @@ paths:
   /user/getUserOnly:
     get:
       parameters:
-      - description: id
-        in: query
-        name: id
-        type: string
       - description: 用户名
         in: query
         name: name
@@ -97,11 +93,11 @@ paths:
       summary: 获取单一用户
       tags:
       - 用户模块
-  /user/updateUser:
-    post:
+  /user/updateUser/{id}:
+    put:
       parameters:
       - description: id
-        in: formData
+        in: path
         name: id
         required: true
         type: string
