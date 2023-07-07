@@ -1,13 +1,17 @@
 package service
 
 import (
-	"IM_System/models/db"
+	"IM_System/models"
 	"IM_System/utils"
 	"fmt"
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+	"log"
 	"math/rand"
+	"net/http"
 	"strconv"
+	"time"
 )
 
 // GetUserList
@@ -18,7 +22,7 @@ import (
 func GetUserList(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"code": 0,
-		"data": db.GetUserList(),
+		"data": models.GetUserList(),
 		"msg":  "success",
 	})
 }
@@ -33,7 +37,7 @@ func GetUserList(c *gin.Context) {
 func UserLogin(c *gin.Context) {
 	name := c.PostForm("name")
 	password := c.PostForm("password")
-	user, err := db.UserLogin(name, password)
+	user, err := models.UserLogin(name, password)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 1,
@@ -58,11 +62,11 @@ func UserLogin(c *gin.Context) {
 // @Success 200 {string} json "{"code","data", "msg"}"
 // @Router /user/getUserOnly [get]
 func GetUserOnly(c *gin.Context) {
-	user := db.UserBasic{}
+	user := models.UserBasic{}
 	user.Phone = c.Query("phone")
 	user.Name = c.Query("name")
 	user.Email = c.Query("email")
-	data, err := db.GetUserOnly(&user)
+	data, err := models.GetUserOnly(&user)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 1,
@@ -89,7 +93,7 @@ func GetUserOnly(c *gin.Context) {
 // @Success 200 {string} json "{"code","data", "msg"}"
 // @Router /user/createUser [post]
 func CreateUser(c *gin.Context) {
-	user := db.UserBasic{}
+	user := models.UserBasic{}
 	user.Name = c.PostForm("name")
 	password := c.PostForm("password")
 	repassword := c.PostForm("repassword")
@@ -106,7 +110,7 @@ func CreateUser(c *gin.Context) {
 	}
 	user.Password = utils.MakePassword(password, salt)
 	user.Salt = salt
-	err := db.CreateUser(&user)
+	err := models.CreateUser(&user)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 1,
@@ -129,7 +133,7 @@ func CreateUser(c *gin.Context) {
 // @Success 200 {string} json "{"code","data", "msg"}"
 // @Router /user/deleteUser/{id} [delete]
 func DeleteUser(c *gin.Context) {
-	user := db.UserBasic{}
+	user := models.UserBasic{}
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -140,7 +144,7 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 	user.ID = uint(id)
-	err = db.DeleteUser(&user)
+	err = models.DeleteUser(&user)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 1,
@@ -167,7 +171,7 @@ func DeleteUser(c *gin.Context) {
 // @Success 200 {string} json "{"code","data", "msg"}"
 // @Router /user/updateUser/{id} [put]
 func UpdateUser(c *gin.Context) {
-	user := db.UserBasic{}
+	user := models.UserBasic{}
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -191,7 +195,7 @@ func UpdateUser(c *gin.Context) {
 		})
 		return
 	}
-	err = db.UpdateUser(&user)
+	err = models.UpdateUser(&user)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 1,
@@ -205,4 +209,50 @@ func UpdateUser(c *gin.Context) {
 		"data": nil,
 		"msg":  "success",
 	})
+}
+
+var upGrade = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+func SendMsg(c *gin.Context) {
+	ws, err := upGrade.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer func(ws *websocket.Conn) {
+		err = ws.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(ws)
+	MsgHandler(ws, c)
+}
+
+func MsgHandler(ws *websocket.Conn, c *gin.Context) {
+	go func() {
+		ch := utils.Subscribe(c, utils.PublishKey)
+		for msg := range ch {
+			tm := time.Now().Format("2006-01-02 15:04:05")
+			m := fmt.Sprintf("[ws][%s]:%s", tm, msg.Payload)
+			err := ws.WriteMessage(1, []byte(m))
+			if err != nil {
+				log.Fatalln(err)
+			}
+		}
+	}()
+	for {
+		_, data, err := ws.ReadMessage()
+		if err != nil {
+			fmt.Println(err)
+		}
+		utils.Publish(c, utils.PublishKey, string(data))
+	}
+}
+
+func SendUserMsg(c *gin.Context) {
+	models.Chat(c.Writer, c.Request)
 }

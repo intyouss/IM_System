@@ -1,4 +1,4 @@
-package db
+package models
 
 import (
 	"IM_System/utils"

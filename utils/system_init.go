@@ -15,7 +15,6 @@ import (
 
 var DB *gorm.DB
 var RedisDB *redis.Client
-var Ctx = context.Background()
 
 func initConfig() {
 	viper.SetConfigName("config")
@@ -48,6 +47,7 @@ func initMysql() {
 }
 
 func initRedis() {
+	var ctx = context.Background()
 	RedisDB = redis.NewClient(&redis.Options{
 		Addr:         viper.GetString("redis.host") + ":" + viper.GetString("redis.port"),
 		Password:     viper.GetString("redis.password"),
@@ -55,15 +55,35 @@ func initRedis() {
 		MinIdleConns: viper.GetInt("redis.minIdleConn"),
 		DB:           viper.GetInt("redis.dbNumber"),
 	})
-	_, err := RedisDB.Ping(Ctx).Result()
+	pong, err := RedisDB.Ping(ctx).Result()
 	if err != nil {
 		panic("Failed the start Redis")
 	}
-	fmt.Println("Redis inited!!")
+	fmt.Println("Redis inited!!", pong)
 }
 
 func Init() {
 	initConfig()
 	initMysql()
 	initRedis()
+}
+
+const (
+	PublishKey = "websocket"
+)
+
+// Publish 发布消息到Redis
+func Publish(ctx context.Context, channel string, msg string) {
+	n, err := RedisDB.Publish(ctx, channel, msg).Result()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%d clients received the message\n", n)
+}
+
+// Subscribe 订阅Redis消息
+func Subscribe(ctx context.Context, channel string) <-chan *redis.Message {
+	sub := RedisDB.Subscribe(ctx, channel)
+	ch := sub.Channel()
+	return ch
 }
