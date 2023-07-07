@@ -256,3 +256,22 @@ func MsgHandler(ws *websocket.Conn, c *gin.Context) {
 func SendUserMsg(c *gin.Context) {
 	models.Chat(c.Writer, c.Request)
 }
+
+// SearchFriends
+// @Summary 搜索好友
+// @Tags 用户模块
+// @param userId formData string true "userId"
+// @Success 200 {string} json "{"code","data", "msg"}"
+// @Router /searchFriends [post]
+func SearchFriends(c *gin.Context) {
+	data, err := strconv.Atoi(c.PostForm("userId"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	users := models.SearchFriends(uint(data))
+	c.JSON(200, gin.H{
+		"code": 0,
+		"data": users,
+		"msg":  "success",
+	})
+}

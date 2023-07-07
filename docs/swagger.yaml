@@ -10,6 +10,22 @@ paths:
             type: string
       tags:
       - 首页
+  /searchFriends:
+    post:
+      parameters:
+      - description: userId
+        in: formData
+        name: userId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"code","data", "msg"}'
+          schema:
+            type: string
+      summary: 搜索好友
+      tags:
+      - 用户模块
   /user/createUser:
     post:
       parameters:

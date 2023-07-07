@@ -31,6 +31,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/searchFriends": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "搜索好友",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userId",
+                        "name": "userId",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\",\"data\", \"msg\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/user/createUser": {
             "post": {
                 "tags": [

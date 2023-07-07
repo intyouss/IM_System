@@ -1,6 +1,9 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"IM_System/utils"
+	"gorm.io/gorm"
+)
 
 // UserContact 人员关系
 type UserContact struct {
@@ -13,4 +16,16 @@ type UserContact struct {
 
 func (table *UserContact) TableName() string {
 	return "user_contact"
+}
+
+func SearchFriends(userID uint) []UserBasic {
+	contacts := make([]UserContact, 0)
+	objIDs := make([]uint, 0)
+	utils.DB.Where("owner_id = ? and type = 1", userID).Find(&contacts)
+	for _, v := range contacts {
+		objIDs = append(objIDs, v.TargetId)
+	}
+	users := make([]UserBasic, 0)
+	utils.DB.Where("id in ?", objIDs).Find(&users)
+	return users
 }
