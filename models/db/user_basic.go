@@ -3,6 +3,7 @@ package db
 import (
 	"IM_System/utils"
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"time"
 )
@@ -28,46 +29,52 @@ func (table *UserBasic) TableName() string {
 	return "user_basic"
 }
 
-func FindUserByName(name string) (user *UserBasic, err error) {
-	db := utils.DB.Where("name = ?", name).First(&user)
-	return user, db.Error
+func FindUserByName(name string) (user *UserBasic, db *gorm.DB) {
+	db = utils.DB.Where("name = ?", name).First(&user)
+	return user, db
 }
 
-func FindUserByPhone(phone string) (user *UserBasic, err error) {
-	db := utils.DB.Where("phone = ?", phone).First(&user)
-	return user, db.Error
+func FindUserByPhone(phone string) (user *UserBasic, db *gorm.DB) {
+	db = utils.DB.Where("phone = ?", phone).First(&user)
+	return user, db
 }
 
-func FindUserByEmail(email string) (user *UserBasic, err error) {
-	db := utils.DB.Where("email = ?", email).First(&user)
-	return user, db.Error
+func FindUserByEmail(email string) (user *UserBasic, db *gorm.DB) {
+	db = utils.DB.Where("email = ?", email).First(&user)
+	return user, db
 }
 
-func FindUserByID(id uint) (user *UserBasic, err error) {
-	db := utils.DB.Where("id = ?", id).First(&user)
-	return user, db.Error
+func FindUserByID(id uint) (user *UserBasic, db *gorm.DB) {
+	db = utils.DB.Where("id = ?", id).First(&user)
+	return user, db
 }
 
-func UserLogin(name string, password string) (user *UserBasic, err error) {
-	user, err = FindUserByName(name)
-	if err != nil {
+func UserLogin(name string, password string) (*UserBasic, error) {
+	user, db := FindUserByName(name)
+	if db.Error != nil {
 		return nil, errors.New("username is not exist")
 	}
 	if passwd := utils.MakePassword(password, user.Salt); passwd != user.Password {
 		return nil, errors.New("wrong username or password")
 	}
+	str := fmt.Sprintf("%d", time.Now().Unix())
+	temp := utils.MD5Encode(str)
+	db.Update("identity", temp)
 	return user, nil
 }
 
 func GetUserOnly(user *UserBasic) (*UserBasic, error) {
 	if user.Name != "" {
-		return FindUserByName(user.Name)
+		data, db := FindUserByName(user.Name)
+		return data, db.Error
 	}
 	if user.Phone != "" {
-		return FindUserByPhone(user.Phone)
+		data, db := FindUserByPhone(user.Phone)
+		return data, db.Error
 	}
 	if user.Email != "" {
-		return FindUserByEmail(user.Email)
+		data, db := FindUserByEmail(user.Email)
+		return data, db.Error
 	}
 	return nil, errors.New("parameter error")
 }
@@ -78,22 +85,22 @@ func GetUserList() []*UserBasic {
 	return data
 }
 
-func CreateUser(user *UserBasic) (err error) {
+func CreateUser(user *UserBasic) error {
 	if user.Name != "" {
-		_, err = FindUserByName(user.Name)
-		if err == nil {
+		_, db := FindUserByName(user.Name)
+		if db.Error == nil {
 			return errors.New("name is exist")
 		}
 	}
 	if user.Email != "" {
-		_, err = FindUserByEmail(user.Email)
-		if err == nil {
+		_, db := FindUserByEmail(user.Email)
+		if db.Error == nil {
 			return errors.New("email is exist")
 		}
 	}
 	if user.Phone != "" {
-		_, err = FindUserByPhone(user.Phone)
-		if err == nil {
+		_, db := FindUserByPhone(user.Phone)
+		if db.Error == nil {
 			return errors.New("phone is exist")
 		}
 	}
@@ -101,19 +108,19 @@ func CreateUser(user *UserBasic) (err error) {
 	return nil
 }
 
-func DeleteUser(user *UserBasic) (err error) {
-	_, err = FindUserByID(user.ID)
-	if err != nil {
-		return err
+func DeleteUser(user *UserBasic) error {
+	_, db := FindUserByID(user.ID)
+	if db.Error != nil {
+		return db.Error
 	}
 	utils.DB.Delete(&user)
 	return nil
 }
 
-func UpdateUser(user *UserBasic) (err error) {
-	_, err = FindUserByID(user.ID)
-	if err != nil {
-		return err
+func UpdateUser(user *UserBasic) error {
+	_, db := FindUserByID(user.ID)
+	if db.Error != nil {
+		return db.Error
 	}
 	utils.DB.Model(&user).Updates(&UserBasic{
 		Name: user.Name, Phone: user.Phone, Email: user.Email, Password: user.Password})
