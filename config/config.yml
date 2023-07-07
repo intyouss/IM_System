@@ -1,6 +1,13 @@
 mysql:
   username: "root"
-  password: "0xxxxxx"
+  password: "xxxxxxx"
   host: "127.0.0.1"
   port: "3306"
   db_name: "ginchat"
+redis:
+  dbNumber: 0
+  password: ""
+  host: "127.0.0.1"
+  port: "6379"
+  poolSize: 30
+  minIdleConn: 30
