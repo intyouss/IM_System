@@ -27,7 +27,10 @@ func ToRegister(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	ind.Execute(c.Writer, "register")
+	err = ind.Execute(c.Writer, "register")
+	if err != nil {
+		panic(err)
+	}
 }
 
 func ToChat(c *gin.Context) {
@@ -49,7 +52,10 @@ func ToChat(c *gin.Context) {
 	user := models.UserBasic{}
 	user.ID = uint(userId)
 	user.Identity = token
-	ind.Execute(c.Writer, user)
+	err = ind.Execute(c.Writer, user)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func Chat(c *gin.Context) {
