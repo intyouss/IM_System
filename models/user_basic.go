@@ -86,10 +86,12 @@ func GetUserList() []*UserBasic {
 }
 
 func CreateUser(user *UserBasic) error {
-	if user.Name != "" {
+	if user.Name == "" {
+		return errors.New("username not entered")
+	} else {
 		_, db := FindUserByName(user.Name)
 		if db.Error == nil {
-			return errors.New("name is exist")
+			return errors.New("username is exist")
 		}
 	}
 	if user.Email != "" {

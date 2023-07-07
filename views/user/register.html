@@ -26,7 +26,7 @@
                 <input v-model="user.password" placeholder="请输入密码" type="password" class="mui-input-clear mui-input">
             </div>
             <div class="mui-input-row">
-                <input v-model="user.Identity" placeholder="再输入密码" type="password" class="mui-input-clear mui-input">
+                <input v-model="user.repassword" placeholder="再输入密码" type="password" class="mui-input-clear mui-input">
             </div>
         </form>
         <div class="mui-content-padded">
@@ -62,10 +62,10 @@
                 util.post("/user/createUser", this.user).then(res => {
                     console.log(res)
                     if (res.code != 0) {
-                        mui.toast(res.message)
+                        mui.toast(res.msg)
                     } else {
                         //location.replace("localhost:8081")
-                        location.href = "/"
+                        location.href = "/index"
                         mui.toast("注册成功,即将跳转")
                     }
                 })
