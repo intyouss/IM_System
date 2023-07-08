@@ -7,10 +7,10 @@ import (
 )
 
 type H struct {
-	Code  int
-	Msg   string
-	Data  interface{}
-	Total interface{}
+	Code  int         `json:"code"`
+	Msg   string      `json:"msg"`
+	Data  interface{} `json:"data"`
+	Total interface{} `json:"total"`
 }
 
 func Resp(w http.ResponseWriter, code int, data interface{}, msg string) {

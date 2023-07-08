@@ -20,7 +20,7 @@ paths:
         type: string
       responses:
         "200":
-          description: '{"code","data", "msg"}'
+          description: '{"code","data", "total"}'
           schema:
             type: string
       summary: 搜索好友

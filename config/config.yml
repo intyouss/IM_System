@@ -4,6 +4,10 @@ mysql:
   host: "127.0.0.1"
   port: "3306"
   db_name: "ginchat"
+  log:
+    prefix: "[Mysql]"
+    loglevel: "info"
+    colorful: true
 redis:
   dbNumber: 0
   password: ""

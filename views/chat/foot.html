@@ -487,11 +487,11 @@
                 loadfriends: function () {
                     var that = this;
                     post("searchFriends", { userId: userId() }, function (res) {
-                        that.friends = res.Rows || [];
+                        that.friends = res.data || [];
                         var usermap = this.usermap;
-                        for (var i in res.Rows) {
-                            var k = "" + res.Rows[i].ID
-                            usermap[k] = res.Rows[i];
+                        for (var i in res.data) {
+                            var k = "" + res.data[i].ID
+                            usermap[k] = res.data[i];
                         }
                         this.usermap = usermap;
                     }.bind(this))

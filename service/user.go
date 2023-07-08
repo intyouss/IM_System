@@ -215,7 +215,7 @@ func UpdateUser(c *gin.Context) {
 // @Summary 搜索好友
 // @Tags 用户模块
 // @param userId formData string true "userId"
-// @Success 200 {string} json "{"code","data", "msg"}"
+// @Success 200 {string} json "{"code","msg", "data", "total"}"
 // @Router /searchFriends [post]
 func SearchFriends(c *gin.Context) {
 	data, err := strconv.Atoi(c.PostForm("userId"))
@@ -223,11 +223,7 @@ func SearchFriends(c *gin.Context) {
 		fmt.Println(err)
 	}
 	users := models.SearchFriends(uint(data))
-	c.JSON(200, gin.H{
-		"code": 0,
-		"data": users,
-		"msg":  "success",
-	})
+	utils.RespOKList(c.Writer, users, len(users))
 }
 
 var upGrade = websocket.Upgrader{

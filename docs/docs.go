@@ -48,7 +48,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"code\",\"data\", \"msg\"}",
+                        "description": "{\"code\",\"data\", \"total\"}",
                         "schema": {
                             "type": "string"
                         }
