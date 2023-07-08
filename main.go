@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	utils.Init()
+	utils.InitSystem()
 	r := router.Router()
 	err := r.Run(":8080")
 	if err != nil {

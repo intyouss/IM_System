@@ -30,22 +30,22 @@ func (table *UserBasic) TableName() string {
 }
 
 func FindUserByName(name string) (user *UserBasic, db *gorm.DB) {
-	db = utils.DB.Where("name = ?", name).First(&user)
+	db = utils.DB.Take(&user, "name = ?", name)
 	return user, db
 }
 
 func FindUserByPhone(phone string) (user *UserBasic, db *gorm.DB) {
-	db = utils.DB.Where("phone = ?", phone).First(&user)
+	db = utils.DB.Take(&user, "phone = ?", phone)
 	return user, db
 }
 
 func FindUserByEmail(email string) (user *UserBasic, db *gorm.DB) {
-	db = utils.DB.Where("email = ?", email).First(&user)
+	db = utils.DB.Take(&user, "email = ?", email)
 	return user, db
 }
 
 func FindUserByID(id uint) (user *UserBasic, db *gorm.DB) {
-	db = utils.DB.Where("id = ?", id).First(&user)
+	db = utils.DB.Take(&user, id)
 	return user, db
 }
 

@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/websocket"
 	"gopkg.in/fatih/set.v0"
 	"gorm.io/gorm"
+	"log"
 	"net"
 	"net/http"
 	"strconv"
@@ -53,7 +54,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 	id := query.Get("userID")
 	userID, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		fmt.Println(err)
+		log.Println("Chat userID 转换错误:", err)
 	}
 	isValida := true
 	// 升级http为websocket
@@ -64,7 +65,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		},
 	}).Upgrade(w, r, nil)
 	if err != nil {
-		panic(err)
+		log.Println("Chat http升级失败:", err)
 	}
 	//创建节点
 	currentTime := uint64(time.Now().Unix())

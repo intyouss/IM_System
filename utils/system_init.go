@@ -1,45 +1,26 @@
 package utils
 
 import (
+	"IM_System/config"
 	"context"
 	"fmt"
 	"github.com/go-redis/redis/v8"
-	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 	"log"
-	"os"
-	"time"
 )
 
 var DB *gorm.DB
 var RedisDB *redis.Client
 
-func initConfig() {
-	viper.SetConfigName("config")
-	viper.AddConfigPath("config")
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic("读取配置文件失败")
-	}
-	fmt.Println("System config inited!!")
-}
-
 func initMysql() {
-	newLogger := logger.New(
-		log.New(os.Stdout, "[Mysql]", log.LstdFlags),
-		logger.Config{
-			SlowThreshold: time.Second,
-			LogLevel:      logger.Info,
-			Colorful:      true,
-		},
-	)
-	mysqlConfig := viper.GetStringMapString("mysql")
+	mysqlConfig := config.GetMysql()
 	dns := mysqlConfig["username"] + ":" + mysqlConfig["password"] + "@tcp(" + mysqlConfig["host"] + ":" +
 		mysqlConfig["port"] + ")/" + mysqlConfig["db_name"] + "?charset=utf8mb4&parseTime=True&loc=Local"
 	var err error
-	DB, err = gorm.Open(mysql.Open(dns), &gorm.Config{Logger: newLogger})
+	DB, err = gorm.Open(mysql.Open(dns), &gorm.Config{
+		Logger: MysqlLogger,
+	})
 	if err != nil {
 		panic("Failed the start Mysql")
 	}
@@ -48,22 +29,22 @@ func initMysql() {
 
 func initRedis() {
 	var ctx = context.Background()
+	redisConfig := config.GetRedis()
 	RedisDB = redis.NewClient(&redis.Options{
-		Addr:         viper.GetString("redis.host") + ":" + viper.GetString("redis.port"),
-		Password:     viper.GetString("redis.password"),
-		PoolSize:     viper.GetInt("redis.poolSize"),
-		MinIdleConns: viper.GetInt("redis.minIdleConn"),
-		DB:           viper.GetInt("redis.dbNumber"),
+		Addr:         redisConfig["host"].(string) + ":" + redisConfig["port"].(string),
+		Password:     redisConfig["password"].(string),
+		PoolSize:     redisConfig["poolsize"].(int),
+		MinIdleConns: redisConfig["minidleconn"].(int),
+		DB:           redisConfig["dbnumber"].(int),
 	})
-	pong, err := RedisDB.Ping(ctx).Result()
+	_, err := RedisDB.Ping(ctx).Result()
 	if err != nil {
 		panic("Failed the start Redis")
 	}
-	fmt.Println("Redis inited!!", pong)
+	fmt.Println("Redis inited!!")
 }
 
-func Init() {
-	initConfig()
+func InitSystem() {
 	initMysql()
 	initRedis()
 }
@@ -76,7 +57,7 @@ const (
 func Publish(ctx context.Context, channel string, msg string) {
 	n, err := RedisDB.Publish(ctx, channel, msg).Result()
 	if err != nil {
-		fmt.Println(err)
+		log.Println("Publish 发布消息失败:", err)
 	}
 	fmt.Printf("%d clients received the message\n", n)
 }
